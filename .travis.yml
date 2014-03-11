@@ -3,5 +3,5 @@ python: "2.7"
 # command to install dependencies
 install: "pip install -r requirements.txt -r requirements_test.txt"
 # command to run tests
-script: py.test
+script: py.test --cov save_parser
 after_success: coveralls
