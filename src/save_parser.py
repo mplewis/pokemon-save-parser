@@ -101,9 +101,12 @@ class PokemonGen1:
 class SaveDataGen1:
     def __init__(self, save_data):
         self.money = money(save_data)
+
         raw_trainer_name = [ord(b) for b in read_bytes(save_data, 0x2598, 8)]
         self.trainer_name = term(to_ascii(raw_trainer_name, pkmn_char_map))
+
         raw_trainer_id = [ord(b) for b in read_bytes(save_data, 0x2605, 2)]
         self.trainer_id = bytes_to_int(raw_trainer_id)
+
         raw_rival_name = [ord(b) for b in read_bytes(save_data, 0x25F6, 8)]
         self.rival_name = term(to_ascii(raw_rival_name, pkmn_char_map))
