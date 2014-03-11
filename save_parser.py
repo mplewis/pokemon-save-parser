@@ -120,11 +120,11 @@ class SaveDataGen1:
         raw_rival_name = [ord(b) for b in read_bytes(save_data, 0x25F6, 8)]
         self.rival_name = term(to_ascii(raw_rival_name, pkmn_char_map))
 
-        self.num_party = ord(save_data[0x2F2C])
+        self.party_size = ord(save_data[0x2F2C])
 
         pkmn_data = [ord(b) for b in read_bytes(save_data, 0x2F2C, 404)]
         self.party = []
-        for num in xrange(self.num_party):
+        for num in xrange(self.party_size):
             pkmn_start = num * PKMN_LENGTH + PKMN_OFFSET
             pkmn_end_inc = pkmn_start + PKMN_LENGTH
             trainer_start = num * TRAINER_LENGTH + TRAINER_OFFSET

@@ -8,7 +8,7 @@ save.money.should.equal(40398)
 save.trainer_name.should.equal('RED')
 save.trainer_id.should.equal(20152)
 save.rival_name.should.equal('BLUE')
-save.num_party.should.equal(6)
+save.party_size.should.equal(6)
 
 len(save.party).should.equal(6)
 
