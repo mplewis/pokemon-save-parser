@@ -4,6 +4,13 @@ import json
 MOVES_DATA = 'data/gen1/pkmn_moves.json'
 INDEXES_DATA = 'data/gen1/pkmn_indexes.json'
 
+PKMN_LENGTH = 44
+PKMN_OFFSET = 0x08
+TRAINER_LENGTH = 11
+TRAINER_OFFSET = 0x110
+NICKNAME_LENGTH = 11
+NICKNAME_OFFSET = 0x152
+
 
 def char_map_store(char_map, offset, symbols):
     """
@@ -96,6 +103,8 @@ class PokemonGen1:
         self.defense = bytes_to_int(pkmn_data[0x26:0x28])
         self.speed = bytes_to_int(pkmn_data[0x28:0x2A])
         self.special = bytes_to_int(pkmn_data[0x2A:0x2C])
+        self.trainer_name = None
+        self.nickname = None
 
 
 class SaveDataGen1:
@@ -111,4 +120,25 @@ class SaveDataGen1:
         raw_rival_name = [ord(b) for b in read_bytes(save_data, 0x25F6, 8)]
         self.rival_name = term(to_ascii(raw_rival_name, pkmn_char_map))
 
-        self.num_pkmn = ord(save_data[0x2F2C])
+        self.num_party = ord(save_data[0x2F2C])
+
+        pkmn_data = [ord(b) for b in read_bytes(save_data, 0x2F2C, 404)]
+        self.party = []
+        for num in xrange(self.num_party):
+            pkmn_start = num * PKMN_LENGTH + PKMN_OFFSET
+            pkmn_end_inc = pkmn_start + PKMN_LENGTH
+            trainer_start = num * TRAINER_LENGTH + TRAINER_OFFSET
+            trainer_end_inc = trainer_start + TRAINER_LENGTH
+            nickname_start = num * NICKNAME_LENGTH + NICKNAME_OFFSET
+            nickname_end_inc = nickname_start + NICKNAME_LENGTH
+
+            one_pkmn_data_raw = pkmn_data[pkmn_start:pkmn_end_inc]
+            trainer_data_raw = pkmn_data[trainer_start:trainer_end_inc]
+            nickname_data_raw = pkmn_data[nickname_start:nickname_end_inc]
+
+            one_pkmn_data = PokemonGen1(one_pkmn_data_raw)
+            one_pkmn_data.trainer_name = term(to_ascii(trainer_data_raw,
+                                                       pkmn_char_map))
+            one_pkmn_data.nickname = term(to_ascii(nickname_data_raw,
+                                                   pkmn_char_map))
+            self.party.append(one_pkmn_data)
