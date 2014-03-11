@@ -31,3 +31,8 @@ lord_helix.species.should.equal('Omastar')
 lord_helix.nickname.should.equal('OMASTAR')
 lord_helix.hp_curr.should.equal(0)
 lord_helix.hp_max.should.equal(154)
+
+air_jordan = save.party[4]
+air_jordan.species.should.equal('Lapras')
+air_jordan.nickname.should.equal('AIIIIIIRRR')
+air_jordan.level.should.equal(31)
