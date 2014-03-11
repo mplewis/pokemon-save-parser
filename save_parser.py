@@ -110,3 +110,5 @@ class SaveDataGen1:
 
         raw_rival_name = [ord(b) for b in read_bytes(save_data, 0x25F6, 8)]
         self.rival_name = term(to_ascii(raw_rival_name, pkmn_char_map))
+
+        self.num_pkmn = ord(save_data[0x2F2C])
