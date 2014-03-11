@@ -1,8 +1,10 @@
 import string
 import json
+import os
 
-MOVES_DATA = 'data/gen1/pkmn_moves.json'
-INDEXES_DATA = 'data/gen1/pkmn_indexes.json'
+package_directory = os.path.dirname(os.path.abspath(__file__))
+MOVES_DATA = os.path.join(package_directory, 'data/gen1/pkmn_moves.json')
+INDEXES_DATA = os.path.join(package_directory, 'data/gen1/pkmn_indexes.json')
 
 PKMN_LENGTH = 44
 PKMN_OFFSET = 0x08
