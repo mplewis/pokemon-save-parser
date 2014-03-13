@@ -6,6 +6,7 @@ package_directory = os.path.dirname(os.path.abspath(__file__))
 MOVES_DATA = os.path.join(package_directory, 'data/gen1/pkmn_moves.json')
 INDEXES_DATA = os.path.join(package_directory, 'data/gen1/pkmn_indexes.json')
 
+PKMN_STRING_TERM = 0x50
 PKMN_LENGTH = 44
 PKMN_OFFSET = 0x08
 TRAINER_LENGTH = 11
@@ -29,17 +30,20 @@ def read_bytes(source, offset, length):
     return source[offset:offset+length]
 
 
-def to_ascii(bytes, char_map):
+def to_ascii(bytes, char_map, terminator=None):
     """
     Translate a sequence of bytes into a pseudo-ASCII string using the given
     charmap.
     """
-    return ''.join([char_map[b] for b in bytes])
-
-
-def term(ascii_array):
-    """Chop off the end of a terminated array."""
-    return ascii_array.split('#')[0]
+    translated = ''
+    for byte in bytes:
+        if byte == terminator:
+            return translated
+        elif byte in char_map:
+            translated += char_map[byte]
+        else:
+            print 'ERROR: No byte %s in char map' % byte
+    return translated
 
 
 def bytes_to_int(bytes):
@@ -65,7 +69,7 @@ def money(save_data):
 
 pkmn_char_map = {}
 
-char_map_store(pkmn_char_map, 0x50, '#')
+char_map_store(pkmn_char_map, PKMN_STRING_TERM, '#')
 char_map_store(pkmn_char_map, 0x7F, ' ')
 char_map_store(pkmn_char_map, 0x80, string.uppercase + '():;[]')
 char_map_store(pkmn_char_map, 0xA0, string.lowercase)
@@ -114,13 +118,15 @@ class SaveDataGen1:
         self.money = money(save_data)
 
         raw_trainer_name = [ord(b) for b in read_bytes(save_data, 0x2598, 8)]
-        self.trainer_name = term(to_ascii(raw_trainer_name, pkmn_char_map))
+        self.trainer_name = to_ascii(raw_trainer_name, pkmn_char_map,
+                                     terminator=PKMN_STRING_TERM)
 
         raw_trainer_id = [ord(b) for b in read_bytes(save_data, 0x2605, 2)]
         self.trainer_id = bytes_to_int(raw_trainer_id)
 
         raw_rival_name = [ord(b) for b in read_bytes(save_data, 0x25F6, 8)]
-        self.rival_name = term(to_ascii(raw_rival_name, pkmn_char_map))
+        self.rival_name = to_ascii(raw_rival_name, pkmn_char_map,
+                                   terminator=PKMN_STRING_TERM)
 
         self.party_size = ord(save_data[0x2F2C])
 
@@ -139,8 +145,9 @@ class SaveDataGen1:
             nickname_data_raw = pkmn_data[nickname_start:nickname_end_inc]
 
             one_pkmn_data = PokemonGen1(one_pkmn_data_raw)
-            one_pkmn_data.trainer_name = term(to_ascii(trainer_data_raw,
-                                                       pkmn_char_map))
-            one_pkmn_data.nickname = term(to_ascii(nickname_data_raw,
-                                                   pkmn_char_map))
+            one_pkmn_data.trainer_name = to_ascii(trainer_data_raw,
+                                                  pkmn_char_map,
+                                                  terminator=PKMN_STRING_TERM)
+            one_pkmn_data.nickname = to_ascii(nickname_data_raw, pkmn_char_map,
+                                              terminator=PKMN_STRING_TERM)
             self.party.append(one_pkmn_data)
