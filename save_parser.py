@@ -5,6 +5,8 @@ import os
 package_directory = os.path.dirname(os.path.abspath(__file__))
 MOVES_DATA = os.path.join(package_directory, 'data/gen1/pkmn_moves.json')
 INDEXES_DATA = os.path.join(package_directory, 'data/gen1/pkmn_indexes.json')
+POKEDEX_DATA = os.path.join(package_directory,
+                            'data/gen1/pkmn_index_to_pokedex.json')
 
 PKMN_STRING_TERM = 0x50
 PKMN_LENGTH = 44
@@ -85,10 +87,14 @@ with open(MOVES_DATA, 'r') as f:
 with open(INDEXES_DATA, 'r') as f:
     pkmn_index_map = json.load(f)
 
+with open(POKEDEX_DATA, 'r') as f:
+    pkmn_index_to_pokedex_map = json.load(f)
+
 
 class PokemonGen1:
     def __init__(self, pkmn_data):
         self.index = pkmn_data[0]
+        self.pokedex_num = pkmn_index_to_pokedex_map[self.index]
         self.species = pkmn_index_map[self.index]
         self.hp_curr = bytes_to_int(pkmn_data[1:3])
         self.hp_max = bytes_to_int(pkmn_data[0x22:0x24])

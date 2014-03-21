@@ -21,12 +21,16 @@ def test_basic_functionality():
     len(battery_jesus.moves).should.equal(4)
     battery_jesus.move_names[3].should.equal('Thunder')
     battery_jesus.level.should.equal(81)
+    battery_jesus.index.should.equal(0x4B)
+    battery_jesus.pokedex_num.should.equal('145')
 
     bird_jesus = save.party[5]
     bird_jesus.species.should.equal('Pidgeot')
     bird_jesus.trainer_name.should.equal('RED')
     bird_jesus.nickname.should.equal('aaabaaajss')
     bird_jesus.exp.should.equal(343472)
+    bird_jesus.index.should.equal(0x97)
+    bird_jesus.pokedex_num.should.equal('018')
 
     lord_helix = save.party[2]
     lord_helix.species.should.equal('Omastar')
